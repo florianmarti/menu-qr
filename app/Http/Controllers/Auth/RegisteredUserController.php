@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Restaurant; // Importar el modelo Restaurant
+use App\Models\Restaurant; // <<< Asegúrate que esta línea exista
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB; // Para la transacción
+use Illuminate\Support\Facades\DB; // <<< Asegúrate que esta línea exista
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use Illuminate\Support\Str; // Para generar el slug
+use Illuminate\Support\Str; // <<< Asegúrate que esta línea exista
 
 class RegisteredUserController extends Controller
 {
@@ -38,22 +38,18 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // >>>>>>>>>>>>>> INICIO DE CÓDIGO MODIFICADO <<<<<<<<<<<<<<<<
-        // Usamos una transacción para asegurar que ambas creaciones
-        // se completen exitosamente.
         try {
 
             $user = DB::transaction(function () use ($request) {
 
-                // 1. Crear el Restaurante PRIMERO (con un slug temporal)
+                // 1. Crear el Restaurante PRIMERO
                 $restaurant = Restaurant::create([
                     'name' => $request->name,
                     'slug' => 'temp-' . Str::uuid(), // Slug temporal único
                     'description' => 'Bienvenido a tu restaurante. Puedes editar esta descripción más tarde.',
                 ]);
 
-                // 2. Crear el Usuario, pasando el ID del restaurante INMEDIATAMENTE
-                // (Esto es posible porque 'restaurant_id' está en $fillable en User.php)
+                // 2. Crear el Usuario, vinculándolo INMEDIATAMENTE
                 $user = User::create([
                     'name' => $request->name,
                     'email' => $request->email,
@@ -63,7 +59,6 @@ class RegisteredUserController extends Controller
                 ]);
 
                 // 3. Actualizar el slug del Restaurante con el ID de usuario
-                // para que sea permanente y descriptivo.
                 $restaurant->slug = Str::slug($request->name) . '-' . $user->id;
                 $restaurant->save();
 
@@ -71,14 +66,14 @@ class RegisteredUserController extends Controller
             });
 
         } catch (\Exception $e) {
-            // Manejar un posible error durante la transacción
             // (En un escenario real, aquí registrarías el error con Log::error($e))
             return redirect()->back()
                 ->with('error', 'Hubo un problema al crear tu cuenta y restaurante. Por favor, intenta de nuevo.')
                 ->withInput();
         }
+
+        // Refrescar el objeto $user para asegurar que la sesión obtenga la relación
         $user->refresh();
-        // >>>>>>>>>>>>>> FIN DE CÓDIGO MODIFICADO <<<<<<<<<<<<<<<<<<
 
         event(new Registered($user));
 

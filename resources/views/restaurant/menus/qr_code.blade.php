@@ -1,36 +1,57 @@
-<x-app-layout>
+<x-dashboard-layout>
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Código QR para el Menú: ') . $menu->name }}
-        </h2>
+        {{ __('Código QR') }}
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 text-center">
+    <x-slot name="subtitle">
+        {{ __('Mostrando el código para el menú: ') }} <span class="font-semibold">{{ $menu->name }}</span>
+    </x-slot>
 
-                    {{-- Enlace Volver --}}
-                    <a href="{{ route('menus.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800 mb-6 block">
-                        &larr; Volver a la lista de Menús
-                    </a>
+    <x-slot name="actions">
+        <a href="{{ route('restaurant.qr.index') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
+            <i class="fas fa-arrow-left"></i>
+            {{ __('Volver a Códigos QR') }}
+        </a>
+    </x-slot>
 
-                    <h3 class="text-lg font-medium mb-4">Escanea este código QR para ver el menú:</h3>
+    <div class="max-w-md mx-auto">
+        <div class="overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <div class="p-6 text-center">
 
-                    {{-- Mostrar el QR Code (como SVG inline) --}}
-                    <div class="inline-block p-4 border rounded-lg bg-white">
-                        {!! $qrCodeSvg !!}
-                    </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    {{ __('Escanea este código') }}
+                </h3>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    {{ __('Tus clientes pueden escanear esto para ver el menú.') }}
+                </p>
 
-                    <p class="mt-4 text-sm text-gray-600">
-                        O visita directamente:
-                        <a href="{{ $publicUrl }}" target="_blank" class="text-blue-500 hover:underline">{{ $publicUrl }}</a>
-                    </p>
-
-                    {{-- Podrías añadir un botón de descarga aquí en el futuro --}}
-
+                <div class="inline-block p-4 my-6 bg-white border rounded-lg shadow-inner">
+                    {!! $qrCodeSvg !!}
                 </div>
+
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ __('O visita directamente:') }}
+                    </p>
+                    <a href="{{ $publicUrl }}" target="_blank" class="text-blue-500 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
+                        {{ $publicUrl }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 rounded-b-lg">
+                {{--
+                  Este botón usa JavaScript simple (window.print())
+                  para abrir el diálogo de impresión del navegador.
+                --}}
+                <button type="button"
+                        onclick="window.print()"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+                    <i class="fas fa-print"></i>
+                    {{ __('Imprimir QR') }}
+                </button>
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-dashboard-layout>

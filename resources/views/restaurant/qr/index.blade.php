@@ -1,49 +1,66 @@
-<x-app-layout>
+<x-dashboard-layout>
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Gestión de Códigos QR') }}
-        </h2>
+        {{ __('Gestión de Códigos QR') }}
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
+    <x-slot name="subtitle">
+        Aquí puedes ver todos tus menús y acceder al código QR de cada uno.
+    </x-slot>
 
-                    <p class="mb-6 text-gray-600 dark:text-gray-400">
-                        Aquí puedes ver todos tus menús y acceder rápidamente al código QR de cada uno para imprimirlo o compartirlo.
-                    </p>
+    <div class="overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+                            Nombre del Menú
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+                            Descripción
+                        </th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Acción</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
 
-                    @if ($menus->isEmpty())
+                    @forelse ($menus as $menu)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $menu->name }}</div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+                                {{ Str::limit($menu->description, 60) }}
+                            </td>
+                            <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                                <a href="{{ route('menus.qr', $menu) }}"
+                                   class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+                                    <i class="fas fa-qrcode"></i>
+                                    Ver QR
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
                         {{-- Mensaje si no hay menús --}}
-                        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg" role="alert">
-                            <p class="font-bold">No tienes menús</p>
-                            <p>Aún no has creado ningún menú. <a href="{{ route('menus.index') }}" class="font-bold underline">Ve a Gestión de Menús</a> para empezar.</p>
-                        </div>
-                    @else
-                        {{-- Lista de menús --}}
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($menus as $menu)
-                                <li class="py-4 flex justify-between items-center">
-                                    {{-- BLOQUE PRINCIPAL (Nombre y Descripción) --}}
-                                    <div>
-                                        <p class="text-lg font-semibold">{{ $menu->name }}</p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $menu->description }}</p>
-                                    </div>
-
-                                    {{-- BLOQUE DE ACCIONES (Ver QR) --}}
-                                    <div>
-                                        <a href="{{ route('menus.qr', $menu) }}"
-                                            class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
-                                            Ver QR
+                        <tr>
+                            <td colspan="3" class="px-6 py-12 text-center">
+                                <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg max-w-md mx-auto" role="alert">
+                                    <p class="font-bold">No tienes menús</p>
+                                    <p>Aún no has creado ningún menú.
+                                        <a href="{{ route('menus.index') }}" class="font-bold underline hover:text-blue-800">
+                                            Ve a Gestión de Menús
                                         </a>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
-                </div>
-            </div>
+                                        para empezar.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+
+                </tbody>
+            </table>
         </div>
     </div>
-</x-app-layout>
+</x-dashboard-layout>

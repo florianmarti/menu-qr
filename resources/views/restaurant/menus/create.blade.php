@@ -1,40 +1,74 @@
-<x-app-layout>
+<x-dashboard-layout>
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Crear Nuevo Menú') }}
-        </h2>
+        {{ __('Crear Nuevo Menú') }}
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+    <x-slot name="subtitle">
+        Completa los detalles básicos de tu nuevo menú.
+    </x-slot>
 
-                    {{-- Formulario para crear un menú --}}
-                    <form method="POST" action="{{ route('menus.store') }}">
-                        @csrf
+    <x-slot name="actions">
+        <a href="{{ route('menus.index') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
+            <i class="fas fa-arrow-left"></i>
+            Volver a Menús
+        </a>
+    </x-slot>
 
-                        <div class="mb-4">
-                            <x-input-label for="name" :value="__('Nombre del Menú')" />
-                            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
-                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                        </div>
+    <div class="max-w-2xl mx-auto">
+        <div class="overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <form action="{{ route('menus.store') }}" method="POST">
+                @csrf
 
-                        <div class="mb-4">
-                            <x-input-label for="description" :value="__('Descripción')" />
-                            <textarea id="description" name="description" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full">{{ old('description') }}</textarea>
-                            <x-input-error :messages="$errors->get('description')" class="mt-2" />
-                        </div>
+                <div class="p-6 space-y-6">
+                    <div>
+                        {{--
+                          Usamos <label> estándar en lugar de <x-input-label>
+                          para un estilo más limpio y directo con Tailwind.
+                        --}}
+                        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Nombre del Menú
+                        </label>
+                        {{--
+                          Usamos <input> estándar en lugar de <x-text-input>
+                          y aplicamos las clases de Tailwind directamente.
+                        --}}
+                        <input type="text" name="name" id="name"
+                               class="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                               placeholder="Ej: Menú Principal"
+                               value="{{ old('name') }}"
+                               required
+                               autofocus>
+                        {{-- Mantenemos el componente de error de Breeze --}}
+                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                    </div>
 
-                        <div class="flex items-center justify-end mt-4">
-                            <x-primary-button>
-                                {{ __('Guardar Menú') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
-
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Descripción (Opcional)
+                        </label>
+                        {{--
+                          Tu <textarea> original ya era casi perfecta, solo ajustamos
+                          las clases para que coincida 100% con el <input>.
+                        --}}
+                        <textarea name="description" id="description" rows="4"
+                                  class="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                                  placeholder="Ej: Nuestro menú completo para cenas y ocasiones especiales.">{{ old('description') }}</textarea>
+                        <x-input-error :messages="$errors->get('description')" class="mt-2" />
+                    </div>
                 </div>
-            </div>
+
+                <div class="flex items-center justify-end px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 rounded-b-lg">
+                    {{--
+                      Reemplazamos <x-primary-button> por un <button> estándar
+                      con las clases de nuestro nuevo diseño.
+                    --}}
+                    <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+                        <i class="fas fa-save"></i>
+                        Guardar Menú
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</x-app-layout>
+</x-dashboard-layout>

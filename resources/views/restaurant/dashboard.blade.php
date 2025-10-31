@@ -1,71 +1,139 @@
-<x-app-layout>
+<x-dashboard-layout>
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Panel de Control de ') }} {{ Auth::user()->restaurant->name ?? 'tu Restaurante' }}
-        </h2>
+        {{ __('Dashboard') }}
+    </x-slot>
+    <x-slot name="subtitle">
+        Bienvenido al panel de control de tu restaurante
+    </x-slot>
+    <x-slot name="actions">
+        <a href="{{ route('menus.create') }}" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+            <i class="fas fa-plus"></i>
+            Nuevo Menú
+        </a>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            {{-- Mensaje de Bienvenida (Opcional) --}}
-            {{-- Puedes descomentar esto si quieres un saludo --}}
-            {{-- <div class="mb-8 p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-800 rounded-lg shadow" role="alert">
-                <p class="font-bold text-lg">¡Bienvenido, {{ Auth::user()->name }}!</p>
-                <p>Gestiona tu menú digital y códigos QR desde aquí.</p>
-            </div> --}}
-
-            {{-- Mensajes Flash (Success/Error) --}}
-            @if (session('success'))
-                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                {{-- Tarjeta 1: Gestión de Menús (Azul) --}}
-                <a href="{{ route('menus.index') }}" class="block p-6 bg-white dark:bg-gray-800 border-t-4 border-blue-600 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out">
-                    <div class="flex items-center mb-3">
-                        <span class="text-4xl text-blue-500 mr-4"><i class="fas fa-book-open"></i></span>
-                        <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Gestión de Menús</h5>
-                    </div>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Crea, edita y organiza tus menús, categorías y platos.</p>
-                </a>
-
-                {{-- Tarjeta 2: Código QR y Publicación (Verde) --}}
-                {{-- Verifica que la ruta 'restaurant.qr.index' esté definida en web.php --}}
-                <a href="{{ route('restaurant.qr.index') }}" class="block p-6 bg-white dark:bg-gray-800 border-t-4 border-green-500 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out">
-                    <div class="flex items-center mb-3">
-                        <span class="text-4xl text-green-500 mr-4"><i class="fas fa-qrcode"></i></span>
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Códigos QR</h5>
-                    </div>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Genera y gestiona los códigos QR para tus menús.</p>
-                </a>
-
-                {{-- Tarjeta 3: Configuración del Perfil/Restaurante (Amarillo) --}}
-                <a href="{{ route('profile.edit') }}" class="block p-6 bg-white dark:bg-gray-800 border-t-4 border-yellow-500 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition duration-300 ease-in-out">
-                    <div class="flex items-center mb-3">
-                        <span class="text-4xl text-yellow-500 mr-4"><i class="fas fa-store-alt"></i></span>
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Configuración</h5>
-                    </div>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Actualiza tu perfil y los detalles de tu restaurante.</p>
-                </a>
-
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div class="flex items-center gap-4 p-5 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <div class="flex items-center justify-center w-12 h-12 text-blue-500 bg-blue-100 rounded-full">
+                <i class="text-xl fas fa-book"></i>
             </div>
-
-            {{-- Sección de Estado (Opcional) --}}
-            <div class="mt-10 p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
-                <h5 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">Información Rápida</h5>
-                <p class="text-gray-700 dark:text-gray-400">Hola, **{{ Auth::user()->name }}**. Última actividad: {{ Auth::user()->updated_at->diffForHumans() }}.</p>
-                {{-- Aquí puedes añadir más detalles, como estado de suscripción si aplica --}}
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Menús Activos</dt>
+                <dd class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $menuCount }}</dd>
             </div>
-
+        </div>
+        <div class="flex items-center gap-4 p-5 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <div class="flex items-center justify-center w-12 h-12 text-green-500 bg-green-100 rounded-full">
+                <i class="text-xl fas fa-list"></i>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Categorías</dt>
+                <dd class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $categoryCount }}</dd>
+            </div>
+        </div>
+        <div class="flex items-center gap-4 p-5 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <div class="flex items-center justify-center w-12 h-12 text-yellow-500 bg-yellow-100 rounded-full">
+                <i class="text-xl fas fa-pizza-slice"></i>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Platos</dt>
+                <dd class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $itemCount }}</dd>
+            </div>
+        </div>
+        <div class="flex items-center gap-4 p-5 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <div class="flex items-center justify-center w-12 h-12 text-indigo-500 bg-indigo-100 rounded-full">
+                <i class="text-xl fas fa-qrcode"></i>
+            </div>
+            <div>
+                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Códigos QR (Menús)</dt>
+                <dd class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $qrCount }}</dd>
+            </div>
         </div>
     </div>
-</x-app-layout>
+    <div class="grid grid-cols-1 gap-6 mt-6 lg:grid-cols-3">
+
+        <div class="overflow-hidden bg-white rounded-lg shadow-lg lg:col-span-2 dark:bg-gray-800">
+            <div class="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Menús Recientes</h3>
+                <a href="{{ route('menus.index') }}" class="text-sm font-medium text-blue-500 hover:underline">Ver Todos</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">Nombre</th>
+                            <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">Categorías</th>
+                            <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">Estado</th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Acciones</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+
+                        @forelse ($recentMenus as $menu)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $menu->name }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ Str::limit($menu->description, 40) }}</div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">{{ $menu->categories_count }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if ($menu->is_active)
+                                    <span class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Activo</span>
+                                @else
+                                    <span class="inline-flex px-2 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">Inactivo</span>
+                                @endif
+                            </td>
+                            <td class="flex items-center justify-end gap-3 px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                                <a href="{{ route('menus.edit', $menu) }}" class="text-indigo-600 hover:text-indigo-900" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="{{ route('menus.qr', $menu) }}" class="text-blue-600 hover:text-blue-900" title="Ver QR"><i class="fas fa-qrcode"></i></a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center">
+                                <p class="text-lg text-gray-500 dark:text-gray-400">Aún no tienes menús.</p>
+                                <a href="{{ route('menus.create') }}" class="text-sm font-medium text-blue-500 hover:underline">¡Crea uno para empezar!</a>
+                            </td>
+                        </tr>
+                        @endforelse
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <div class="p-5 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Actividad Reciente</h3>
+            </div>
+            <div class="p-5">
+                <ul class="space-y-4">
+
+                    @forelse ($recentActivity as $activity)
+                        {{--
+                          ESTO ES UN EJEMPLO PARA CUANDO IMPLEMENTEMOS EL LOG DE ACTIVIDAD
+                        <li class="flex gap-4">
+                            <div class="flex items-center justify-center w-10 h-10 text-blue-500 bg-blue-100 rounded-full flex-shrink-0">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900 dark:text-gray-100">{{ $activity->description }}</h4>
+                                <time class="text-xs text-gray-400">{{ $activity->created_at->diffForHumans() }}</time>
+                            </div>
+                        </li>
+                        --}}
+                    @empty
+                        <li class="text-center text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-history mr-2"></i>
+                            No hay actividad reciente para mostrar.
+                        </li>
+                    @endforelse
+
+                </ul>
+            </div>
+        </div>
+        </div>
+
+</x-dashboard-layout>

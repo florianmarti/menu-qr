@@ -17,6 +17,8 @@ class Restaurant extends Model
         'name',
         'slug',
         'description',
+        'logo_path',    
+        'theme_color',
     ];
 
     /**
