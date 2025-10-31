@@ -1,4 +1,5 @@
 <?php
+// app/Models/Subscription.php
 
 namespace App\Models;
 
@@ -9,25 +10,30 @@ class Subscription extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     * (Corregido para coincidir con tu base de datos actual)
+     */
     protected $fillable = [
-        'user_id', 'restaurant_id', 'type', 'stripe_subscription_id',
-        'stripe_customer_id', 'trial_ends_at', 'ends_at', 'features'
+        'user_id',
+        'plan_name',
+        'status',
+        'expires_at',
     ];
 
+    /**
+     * The attributes that should be cast.
+     */
     protected $casts = [
-        'features' => 'array',
-        'trial_ends_at' => 'datetime',
-        'ends_at' => 'datetime'
+        'expires_at' => 'datetime',
     ];
 
+    /**
+     * Una suscripción pertenece a un usuario.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function restaurant()
-    {
-        return $this->belongsTo(Restaurant::class);
     }
 
     /**
@@ -35,17 +41,11 @@ class Subscription extends Model
      */
     public function isActive()
     {
-        return is_null($this->ends_at) || $this->ends_at->isFuture();
-    }
-
-    public function isOnTrial()
-    {
-        return $this->trial_ends_at && $this->trial_ends_at->isFuture();
-    }
-
-    public function getFeatures()
-    {
-        // Usa la configuración de suscripción para obtener las características
-        return $this->features ?? config("subscription.types.{$this->type}.features", []);
+        // >>>>>>>>>>>>>> INICIO DE CÓDIGO CORREGIDO <<<<<<<<<<<<<<<<
+        // Comprueba si el estado es 'active' Y la fecha de expiración es futura (o nula)
+        // (Cambiado de $this.status a $this->status)
+        return $this->status === 'active' &&
+               (is_null($this->expires_at) || $this->expires_at->isFuture());
+        // >>>>>>>>>>>>>> FIN DE CÓDIGO CORREGIDO <<<<<<<<<<<<<<<<<<
     }
 }

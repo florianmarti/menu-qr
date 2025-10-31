@@ -8,8 +8,14 @@ use App\Http\Controllers\MenuItemController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RestaurantDashboardController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Admin\RestaurantController as AdminRestaurantController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController; // <<< 1. IMPORTAR
 
-// ... (rutas welcome, public.menu.show, dashboard sin cambios) ...
+// ===============================================
+// RUTA CENTRAL DEL DASHBOARD (PUNTO DE REDIRECCIÓN)
+// ===============================================
 Route::get('/', function () {
     return view('welcome');
 });
@@ -28,24 +34,43 @@ Route::get('/dashboard', function () {
 // ===============================================
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // 1. Panel de ADMINISTRADOR
-    Route::view('/admin/dashboard', 'admin.dashboard')
-        ->name('admin.dashboard');
+    // -------------------------------------------------------------------
+    // GRUPO DE RUTAS DE ADMINISTRADOR (Súper Admin)
+    // -------------------------------------------------------------------
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
-    // >>>>>>>>>>>>>> INICIO DE CORRECCIÓN DE BUG <<<<<<<<<<<<<<<<
-    // 2. Panel de RESTAURANTE (Cliente)
-    // TENÍAS ESTA RUTA DUPLICADA. La ruta 'Route::view' de abajo
-    // estaba bloqueando al controlador 'RestaurantDashboardController'.
-    // He eliminado la siguiente línea:
-    // Route::view('/restaurant/dashboard', 'restaurant.dashboard')
-    //    ->name('restaurant.dashboard');
-    //
-    // Esta es la única línea que debe existir para esta ruta:
+        // Dashboard
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        // Gestión de Restaurantes
+        Route::resource('restaurants', AdminRestaurantController::class)->only([
+            'index'
+        ]);
+
+        // Gestión de Usuarios
+        Route::resource('users', AdminUserController::class)->only([
+            'index'
+        ]);
+
+        // >>>>>>>>>>>>>> INICIO DE CÓDIGO NUEVO <<<<<<<<<<<<<<<<
+        // Gestión de Suscripciones
+        Route::resource('subscriptions', AdminSubscriptionController::class)->only([
+            'index' // Por ahora, solo la lista
+        ]);
+        // >>>>>>>>>>>>>> FIN DE CÓDIGO NUEVO <<<<<<<<<<<<<<<<<<
+
+    }); // <-- Fin del grupo Admin
+
+    // -------------------------------------------------------------------
+    // GRUPO DE RUTAS DE CLIENTE (Dueño de Restaurante)
+    // -------------------------------------------------------------------
+
+    // Dashboard
     Route::get('/restaurant/dashboard', [RestaurantDashboardController::class, 'index'])
         ->name('restaurant.dashboard');
-    // >>>>>>>>>>>>>> FIN DE CORRECCIÓN DE BUG <<<<<<<<<<<<<<<<<<
 
-    // 3. Rutas de GESTIÓN DE RECURSOS (Menús)
+    // Gestión de Menús (Recurso)
     Route::resource('menus', MenuController::class)->names([
         'index' => 'menus.index',
         'create' => 'menus.create',
@@ -55,22 +80,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'update' => 'menus.update',
         'destroy' => 'menus.destroy',
     ]);
-    Route::get('menus/{menu}/qr', [MenuController::class, 'showQrCode'])->name('menus.qr');
-
-    // 4. Rutas de Perfil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // >>>>>>>>>>>>>> INICIO DE CÓDIGO NUEVO <<<<<<<<<<<<<<<<
-    // Nueva ruta para actualizar el Branding (logo y color)
-    Route::patch('/profile/branding', [ProfileController::class, 'updateBranding'])
-         ->name('profile.branding.update');
-    // >>>>>>>>>>>>>> FIN DE CÓDIGO NUEVO <<<<<<<<<<<<<<<<<<
-
-    Route::get('/restaurant/qrcodes', [MenuController::class, 'indexQRCodes'])->name('restaurant.qr.index');
-
-    // ... (RUTAS CRUD ANIDADAS DE CATEGORÍAS)
+    // Rutas anidadas de Categorías
     Route::resource('menus.categories', CategoryController::class)->names([
         'index' => 'categories.index',
         'create' => 'categories.create',
@@ -79,8 +89,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'update' => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
-
-    // ... (RUTAS CRUD ANIDADAS DE ITEMS)
+    // Rutas anidadas de Platos
     Route::resource('menus.categories.items', MenuItemController::class)->names([
         'index' => 'items.index',
         'create' => 'items.create',
@@ -90,6 +99,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'update' => 'items.update',
         'destroy' => 'items.destroy',
     ]);
-});
+
+    // Gestión de QR
+    Route::get('menus/{menu}/qr', [MenuController::class, 'showQrCode'])->name('menus.qr');
+    Route::get('/restaurant/qrcodes', [MenuController::class, 'indexQRCodes'])->name('restaurant.qr.index');
+
+    // Perfil (común para ambos roles)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile/branding', [ProfileController::class, 'updateBranding'])
+         ->name('profile.branding.update');
+
+}); // <-- Fin del grupo Auth
 
 require __DIR__ . '/auth.php';
