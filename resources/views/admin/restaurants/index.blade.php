@@ -1,4 +1,4 @@
-{{-- resources/views/admin/restaurants/index.blade.php --}}
+ 
 <x-dashboard-layout>
 
     <x-slot name="header">
@@ -8,32 +8,36 @@
         {{ __('Ver, editar y administrar todas las cuentas de restaurantes.') }}
     </x-slot>
 
-    {{--
-    <x-slot name="actions">
-        <a href="#" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
-            <i class="fas fa-plus"></i>
-            Crear Restaurante
-        </a>
-    </x-slot>
-    --}}
+    {{-- <x-slot name="actions"> ... </x-slot> --}}
 
     <div class="overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800">
-        <div class="overflow-x-auto">
+        {{--
+          NOTA: Se elimina 'overflow-x-auto' del div contenedor
+          para que la tabla se ajuste al 100% del ancho.
+        --}}
+        <div>
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
-                            Restaurante (ID)
+                            Restaurante
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil y tablet, visible en desktop ('lg') --}}
+                        <th scope="col" class="hidden lg:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Dueño
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil, visible en tablet ('md') y superior --}}
+                        <th scope="col" class="hidden md:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Menús
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil y tablet, visible en desktop ('lg') --}}
+                        <th scope="col" class="hidden lg:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Registrado
                         </th>
+
                         <th scope="col" class="relative px-6 py-3">
                             <span class="sr-only">Acciones</span>
                         </th>
@@ -44,25 +48,36 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $restaurant->name }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $restaurant->id }}</div>
+                                {{--
+                                  Mostramos el ID y el Dueño apilados solo en móvil
+                                  (se oculta en 'lg' y superior)
+                                --}}
+                                <div class="text-sm text-gray-500 dark:text-gray-400 lg:hidden">
+                                    ID: {{ $restaurant->id }} | Dueño: {{ $restaurant->user->name ?? 'N/A' }}
+                                </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+
+                            <td class="hidden lg:table-cell px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                 {{ $restaurant->user->name ?? 'N/A' }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                {{-- Contamos los menús (esto se puede optimizar luego con withCount) --}}
+
+                            <td class="hidden md:table-cell px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                 {{ $restaurant->menus->count() }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+
+                            <td class="hidden lg:table-cell px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                 {{ $restaurant->created_at->format('d/m/Y') }}
                             </td>
-                            <td class="flex items-center justify-end gap-3 px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900" title="Editar Restaurante">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="#" class="text-red-600 hover:text-red-900" title="Suspender">
-                                    <i class="fas fa-ban"></i>
-                                </a>
+
+                            <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-3">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900" title="Editar Restaurante">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="text-red-600 hover:text-red-900" title="Suspender">
+                                        <i class="fas fa-ban"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty

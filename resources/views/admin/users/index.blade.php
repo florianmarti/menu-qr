@@ -9,22 +9,24 @@
     </x-slot>
 
     <div class="overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800">
-        <div class="overflow-x-auto">
+        <div>
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Nombre
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
-                            Correo Electrónico
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil, visible en tablet ('md') y superior --}}
+                        <th scope="col" class="hidden md:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Restaurante Asignado
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil y tablet, visible en desktop ('lg') --}}
+                        <th scope="col" class="hidden lg:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Registrado
                         </th>
+
                         <th scope="col" class="relative px-6 py-3">
                             <span class="sr-only">Acciones</span>
                         </th>
@@ -35,20 +37,29 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $user->name }}</div>
+                                {{--
+                                  Mostramos el email apilado solo en móvil
+                                  (se oculta en 'md' y superior, donde 'Restaurante' aparece)
+                                --}}
+                                <div class="text-sm text-gray-500 dark:text-gray-400 md:hidden">
+                                    {{ $user->email }}
+                                </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
-                                {{ $user->email }}
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+
+                            <td class="hidden md:table-cell px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                 {{ $user->restaurant->name ?? 'N/A' }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+
+                            <td class="hidden lg:table-cell px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                 {{ $user->created_at->format('d/m/Y') }}
                             </td>
-                            <td class="flex items-center justify-end gap-3 px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900" title="Editar Usuario">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+
+                            <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-3">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900" title="Editar Usuario">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty

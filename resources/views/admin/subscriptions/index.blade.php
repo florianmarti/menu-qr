@@ -9,25 +9,34 @@
     </x-slot>
 
     <div class="overflow-hidden bg-white rounded-lg shadow-lg dark:bg-gray-800">
-        <div class="overflow-x-auto">
+        <div>
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Usuario
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil, visible en tablet ('md') y superior --}}
+                        <th scope="col" class="hidden md:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Restaurante
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil y tablet, visible en desktop ('lg') --}}
+                        <th scope="col" class="hidden lg:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Plan
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil, visible en tablet ('md') y superior --}}
+                        <th scope="col" class="hidden md:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Estado
                         </th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+
+                        {{-- Oculto en móvil y tablet, visible en desktop ('lg') --}}
+                        <th scope="col" class="hidden lg:table-cell px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                             Vence
                         </th>
+
                         <th scope="col" class="relative px-6 py-3">
                             <span class="sr-only">Acciones</span>
                         </th>
@@ -38,16 +47,29 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $subscription->user->name ?? 'N/A' }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $subscription->user->email ?? 'N/A' }}</div>
+                                {{--
+                                  Mostramos Plan y Estado apilados solo en móvil
+                                  (se oculta en 'md' y superior)
+                                --}}
+                                <div class="text-sm text-gray-500 dark:text-gray-400 md:hidden">
+                                    Plan: {{ $subscription->plan_name }}
+                                    @if ($subscription->status === 'active')
+                                        (Activo)
+                                    @else
+                                        ({{ ucfirst($subscription->status) }})
+                                    @endif
+                                </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+
+                            <td class="hidden md:table-cell px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                 {{ $subscription->user->restaurant->name ?? 'N/A' }}
                             </td>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-gray-100">
+
+                            <td class="hidden lg:table-cell px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-gray-100">
                                 {{ $subscription->plan_name }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                {{-- Lógica de estado (ejemplo) --}}
+
+                            <td class="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                                 @if ($subscription->status === 'active')
                                     <span class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
                                         Activo
@@ -58,13 +80,17 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
+
+                            <td class="hidden lg:table-cell px-6 py-4 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400">
                                 {{ $subscription->expires_at ? $subscription->expires_at->format('d/m/Y') : 'N/A' }}
                             </td>
-                            <td class="flex items-center justify-end gap-3 px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900" title="Editar Suscripción">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+
+                            <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-3">
+                                    <a href="#" class="text-indigo-600 hover:text-indigo-900" title="Editar Suscripción">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty
