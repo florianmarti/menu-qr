@@ -1,4 +1,4 @@
-# MenuQR Pro
+# Menusito
 
 A lightweight SaaS platform for restaurants to create, manage, and display dynamic digital QR code menus. This project is built using the TALL stack (Tailwind, Alpine.js, Laravel, Livewire) [o TALL si es el caso, si no, solo Laravel].
 

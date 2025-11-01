@@ -11,8 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Admin\RestaurantController as AdminRestaurantController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController; // <<< 1. IMPORTAR
+use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\LandingPageController;
 
+
+Route::post('/contact', [LandingPageController::class, 'handleContactForm'])->name('contact.submit');
 // ===============================================
 // RUTA CENTRAL DEL DASHBOARD (PUNTO DE REDIRECCIÓN)
 // ===============================================
